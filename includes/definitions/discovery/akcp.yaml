@@ -30,7 +30,7 @@ modules:
                         -
                             oid: sensorProbeSwitchOnline
                             op: '!='
-                            value: 2
+                            value: 1
                     states:
                         - { descr: noStatus, graph: 1, value: 1, generic: 3 }
                         - { descr: normal, graph: 1, value: 2, generic: 0 }
@@ -52,7 +52,7 @@ modules:
                         -
                             oid: sensorProbeHumidityOnline
                             op: '!='
-                            value: 2
+                            value: 1
         current:
             data:
                 -

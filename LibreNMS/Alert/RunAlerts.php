@@ -472,8 +472,8 @@ class RunAlerts
             }
 
             if (! $noiss) {
-                $this->issueAlert($alert);
                 dbUpdate(['alerted' => $alert['state']], 'alerts', 'rule_id = ? && device_id = ?', [$alert['rule_id'], $alert['device_id']]);
+                $this->issueAlert($alert);
             }
 
             if (! $noacc) {

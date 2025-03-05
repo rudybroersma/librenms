@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cisco.php
  *
@@ -22,6 +23,7 @@
  * @copyright  2018 Tony Murray
  * @author     Tony Murray <murraytony@gmail.com>
  * @copyright  2018 Jose Augusto Cardoso
+ * @copyright  2025 Rudy Broersma <tozz@kijkt.tv>
  */
 
 namespace LibreNMS\OS\Shared;
@@ -507,7 +509,7 @@ class Cisco extends OS implements
             foreach ($portAuthSessionEntry as $index => $portAuthSessionEntryParameters) {
                 [$ifIndex, $auth_id] = explode('.', str_replace("'", '', $index));
                 $session_info = $cafSessionMethodsInfoEntry->get($ifIndex . '.' . $auth_id);
-                $mac_address = Mac::parse($portAuthSessionEntryParameters['cafSessionClientMacAddress'] ?? '')->hex();
+                $mac_address = Mac::parse($portAuthSessionEntryParameters['cafSessionClientMacAddress'])->hex();
 
                 $nac->put($mac_address, new PortsNac([
                     'port_id' => (int) PortCache::getIdFromIfIndex($ifIndex, $this->getDevice()),
@@ -671,7 +673,6 @@ class Cisco extends OS implements
     protected function getMainSerial()
     {
         $serial_output = snmp_get_multi($this->getDeviceArray(), ['entPhysicalSerialNum.1', 'entPhysicalSerialNum.1001'], '-OQUs', 'ENTITY-MIB:OLD-CISCO-CHASSIS-MIB');
-//        $serial_output = snmp_getnext($this->getDevice(), 'entPhysicalSerialNum', '-OQUs', 'ENTITY-MIB:OLD-CISCO-CHASSIS-MIB');
 
         if (! empty($serial_output[1]['entPhysicalSerialNum'])) {
             return $serial_output[1]['entPhysicalSerialNum'];
@@ -679,6 +680,15 @@ class Cisco extends OS implements
             return $serial_output[1000]['entPhysicalSerialNum'];
         } elseif (! empty($serial_output[1001]['entPhysicalSerialNum'])) {
             return $serial_output[1001]['entPhysicalSerialNum'];
+        }
+
+        $snmpData = SnmpQuery::cache()->hideMib()->mibs(['ENTITY-MIB'])->walk('ENTITY-MIB::entPhysicalClass')->table(1);
+        foreach ($snmpData as $key => $value) {
+            if ($value['entPhysicalClass'] == 3) {	// Get physical sensor ID for chassis
+                $serial = SnmpQuery::enumStrings()->hideMib()->get('ENTITY-MIB::entPhysicalSerialNum.' . $key)->value();
+
+                return $serial;
+            }
         }
 
         return null;

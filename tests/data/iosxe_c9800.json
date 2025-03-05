@@ -5338,7 +5338,7 @@
                     "location": "<private>",
                     "os": "iosxe",
                     "type": "network",
-                    "serial": null,
+                    "serial": "<private>",
                     "icon": "cisco.svg"
                 }
             ]

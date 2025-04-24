@@ -13,7 +13,7 @@
                     "location": "<private>",
                     "os": "iosxe",
                     "type": "network",
-                    "serial": null,
+                    "serial": "FOX2714PR2G",
                     "icon": "cisco.svg"
                 }
             ]
